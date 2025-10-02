@@ -218,7 +218,7 @@ impl SegmentAggregationCollector for SegmentCardinalityCollector {
         let intermediate_result = self.into_intermediate_metric_result(agg_with_accessor)?;
         results.push(
             name,
-            IntermediateAggregationResult::Metric(intermediate_result),
+            IntermediateAggregationResult::Metric(Box::new(intermediate_result)),
         )?;
 
         Ok(())

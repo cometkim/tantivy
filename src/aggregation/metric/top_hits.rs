@@ -583,7 +583,7 @@ impl SegmentAggregationCollector for TopHitsSegmentCollector {
         );
         results.push(
             name,
-            IntermediateAggregationResult::Metric(intermediate_result),
+            IntermediateAggregationResult::Metric(Box::new(intermediate_result)),
         )
     }
 

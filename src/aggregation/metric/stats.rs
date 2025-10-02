@@ -271,7 +271,7 @@ impl SegmentAggregationCollector for SegmentStatsCollector {
 
         results.push(
             name,
-            IntermediateAggregationResult::Metric(intermediate_metric_result),
+            IntermediateAggregationResult::Metric(Box::new(intermediate_metric_result)),
         )?;
 
         Ok(())

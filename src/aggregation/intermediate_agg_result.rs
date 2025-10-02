@@ -211,36 +211,36 @@ pub(crate) fn empty_from_req(req: &Aggregation) -> IntermediateAggregationResult
                 is_date_agg: true,
             })
         }
-        Average(_) => IntermediateAggregationResult::Metric(IntermediateMetricResult::Average(
-            IntermediateAverage::default(),
+        Average(_) => IntermediateAggregationResult::Metric(Box::new(
+            IntermediateMetricResult::Average(IntermediateAverage::default()),
         )),
-        Count(_) => IntermediateAggregationResult::Metric(IntermediateMetricResult::Count(
-            IntermediateCount::default(),
+        Count(_) => IntermediateAggregationResult::Metric(Box::new(
+            IntermediateMetricResult::Count(IntermediateCount::default()),
         )),
-        Max(_) => IntermediateAggregationResult::Metric(IntermediateMetricResult::Max(
+        Max(_) => IntermediateAggregationResult::Metric(Box::new(IntermediateMetricResult::Max(
             IntermediateMax::default(),
-        )),
-        Min(_) => IntermediateAggregationResult::Metric(IntermediateMetricResult::Min(
+        ))),
+        Min(_) => IntermediateAggregationResult::Metric(Box::new(IntermediateMetricResult::Min(
             IntermediateMin::default(),
+        ))),
+        Stats(_) => IntermediateAggregationResult::Metric(Box::new(
+            IntermediateMetricResult::Stats(IntermediateStats::default()),
         )),
-        Stats(_) => IntermediateAggregationResult::Metric(IntermediateMetricResult::Stats(
-            IntermediateStats::default(),
-        )),
-        ExtendedStats(_) => IntermediateAggregationResult::Metric(
+        ExtendedStats(_) => IntermediateAggregationResult::Metric(Box::new(
             IntermediateMetricResult::ExtendedStats(IntermediateExtendedStats::default()),
-        ),
-        Sum(_) => IntermediateAggregationResult::Metric(IntermediateMetricResult::Sum(
-            IntermediateSum::default(),
         )),
-        Percentiles(_) => IntermediateAggregationResult::Metric(
+        Sum(_) => IntermediateAggregationResult::Metric(Box::new(IntermediateMetricResult::Sum(
+            IntermediateSum::default(),
+        ))),
+        Percentiles(_) => IntermediateAggregationResult::Metric(Box::new(
             IntermediateMetricResult::Percentiles(PercentilesCollector::default()),
-        ),
-        TopHits(ref req) => IntermediateAggregationResult::Metric(
+        )),
+        TopHits(ref req) => IntermediateAggregationResult::Metric(Box::new(
             IntermediateMetricResult::TopHits(TopHitsTopNComputer::new(req)),
-        ),
-        Cardinality(_) => IntermediateAggregationResult::Metric(
+        )),
+        Cardinality(_) => IntermediateAggregationResult::Metric(Box::new(
             IntermediateMetricResult::Cardinality(CardinalityCollector::default()),
-        ),
+        )),
     }
 }
 
@@ -250,7 +250,7 @@ pub enum IntermediateAggregationResult {
     /// Bucket variant
     Bucket(IntermediateBucketResult),
     /// Metric variant
-    Metric(IntermediateMetricResult),
+    Metric(Box<IntermediateMetricResult>),
 }
 
 impl IntermediateAggregationResult {
@@ -278,7 +278,7 @@ impl IntermediateAggregationResult {
             (
                 IntermediateAggregationResult::Metric(m1),
                 IntermediateAggregationResult::Metric(m2),
-            ) => m1.merge_fruits(m2),
+            ) => m1.merge_fruits(*m2),
             _ => panic!("aggregation result type mismatch (mixed metric and buckets)"),
         }
     }

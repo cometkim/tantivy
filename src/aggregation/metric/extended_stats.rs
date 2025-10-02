@@ -376,11 +376,10 @@ impl SegmentAggregationCollector for SegmentExtendedStatsCollector {
         results: &mut IntermediateAggregationResults,
     ) -> crate::Result<()> {
         let name = agg_with_accessor.aggs.keys[self.accessor_idx].to_string();
+        let intermediate_result = IntermediateMetricResult::ExtendedStats(self.extended_stats);
         results.push(
             name,
-            IntermediateAggregationResult::Metric(IntermediateMetricResult::ExtendedStats(
-                self.extended_stats,
-            )),
+            IntermediateAggregationResult::Metric(Box::new(intermediate_result)),
         )?;
 
         Ok(())
